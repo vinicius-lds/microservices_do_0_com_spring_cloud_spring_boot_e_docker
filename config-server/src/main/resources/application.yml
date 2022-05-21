@@ -3,14 +3,12 @@ server:
 spring:
   application:
     name: config-server
-  profiles:
-    active:
-    - native
   cloud:
     config:
       server:
         git:
           uri: https://github.com/vinicius-lds/microservices_do_0_com_spring_cloud_spring_boot_e_docker
-          #username:
-          #password:
           default-label: main
+          search-paths: 
+          - 'config-repo*'
+          - 'config-repo/greeting-service*'
