@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch GreetingServiceApplication",
+            "request": "launch",
+            "mainClass": "com.vinicius.lds.greetingservice.GreetingServiceApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-GreetingServiceApplication<greeting-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.vinicius.lds.greetingservice.GreetingServiceApplication",
+            "projectName": "greeting-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
