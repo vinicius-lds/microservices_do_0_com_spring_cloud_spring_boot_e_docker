@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch CambioServiceApplication",
+            "request": "launch",
+            "mainClass": "com.vinicius.lds.cambioservice.CambioServiceApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "Launch ConfigServerApplication",
             "request": "launch",
             "mainClass": "com.vinicius.lds.configserver.ConfigServerApplication",
@@ -26,6 +33,17 @@
             "envFile": "${workspaceFolder}/.env",
             "noDebug": false,
             "__progressId": "2fef2bf2-8bab-4056-a9fe-f95ee3ed98e1"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CambioServiceApplication<cambio-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.vinicius.lds.cambioservice.CambioServiceApplication",
+            "projectName": "cambio-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

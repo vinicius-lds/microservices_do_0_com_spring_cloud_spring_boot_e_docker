@@ -1,0 +1,50 @@
+server:
+  port: 8100
+# eureka:
+#   client:
+#     service-url:
+#       defaultZone: http://localhost:8761/eureka
+resilience4j:
+  bulkhead:
+    instances:
+      default:
+        max-concurrent-calls: 10
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 2
+        limitRefreshPeriod: 10s
+  retry:
+    instances:
+      foo-bar:
+        max-attempts: 5
+        wait-duration: 1s
+        enable-exponential-backoff: true
+spring:
+  application:
+    name: book-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+    username: postgres
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: book_service
+  flyway:
+    url: jdbc:postgresql://localhost:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+    schemas: book_service
+    user: postgres
+    password: admin
+  sleuth:
+    sampler:
+      probability: 1.0
+springdoc:
+  show-actuator: true
+  api-docs:
+    path: book-service/v3/api-docs

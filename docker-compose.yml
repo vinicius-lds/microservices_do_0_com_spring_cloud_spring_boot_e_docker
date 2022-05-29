@@ -1,0 +1,100 @@
+version: '3.4'
+
+services:
+  rabbit-mq:
+    image: rabbitmq:3.8.18-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - viniciuslds-network
+
+  zipkin-server:
+    image: openzipkin/zipkin:2.23.2
+    restart: always
+    ports:
+      - 9411:9411
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBIT_URI=amqp://guest:guest@rabbit-mq:5672
+    networks:
+      - viniciuslds-network
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=microservices_do_0_com_spring_cloud_spring_boot_e_docker
+    networks:
+      - viniciuslds-network
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  naming-server:
+    image: viniciuslds/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+    networks:
+      - viniciuslds-network
+
+  api-gateway:
+    image: viniciuslds/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - 8765:8765
+    depends_on:
+      - naming-server
+      - rabbitmq
+    environment:
+      - SPRING.ZIPKIN.BASEURL=http://zipkin-server:9411
+      - eureka.client.serviceUrl.defaultZone=http://naming-server:8761/eureka/
+      - RABBIT_URI=amqp://guest:guest@rabbit-mq:5672
+      - SPRING_RABBITMQ_HOST=rabbit-mq
+      - SPRING_ZIPKIN_SENDER_TYPE=rabbit
+    networks:
+      - viniciuslds-network
+  
+  book-service:
+    image: viniciuslds/book-service:0.0.1-SNAPSHOT
+    ports:
+      - 8100:8100
+    depends_on:
+      - naming-server
+      - rabbitmq
+      - postgres
+    environment:
+      - SPRING.ZIPKIN.BASEURL=http://zipkin-server:9411
+      - RABBIT_URI=amqp://guest:guest@rabbit-mq:5672
+      - SPRING_RABBITMQ_HOST=rabbit-mq
+      - SPRING_ZIPKIN_SENDER_TYPE=rabbit
+      - eureka.client.serviceUrl.defaultZone=http://naming-server:8761/eureka/
+      - spring.datasource.url=jdbc:postgresql://postgres:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+      - spring.flyway.url=jdbc:postgresql://postgres:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+    networks:
+      - viniciuslds-network
+
+  cambio-service:
+    image: viniciuslds/cambio-service:0.0.1-SNAPSHOT
+    ports:
+      - 8000:8000
+    depends_on:
+      - naming-server
+      - postgres
+      - rabbitmq
+    environment:
+      - SPRING.ZIPKIN.BASEURL=http://zipkin-server:9411
+      - RABBIT_URI=amqp://guest:guest@rabbit-mq:5672
+      - SPRING_RABBITMQ_HOST=rabbit-mq
+      - SPRING_ZIPKIN_SENDER_TYPE=rabbit
+      - eureka.client.serviceUrl.defaultZone=http://naming-server:8761/eureka/
+      - spring.datasource.url=jdbc:postgresql://postgres:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+      - spring.flyway.url=jdbc:postgresql://postgres:5432/microservices_do_0_com_spring_cloud_spring_boot_e_docker
+    networks:
+      - viniciuslds-network
+
+networks:
+  viniciuslds-network:
+    driver: bridge
